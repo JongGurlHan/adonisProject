@@ -20,18 +20,29 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', 'TasksController.index')
+/*  === Task ==*/
+
+Route.get('/tasks', 'TasksController.showAllTask') //전체 task 조회
+
+Route.get('/taskUserTag/:id', 'TasksController.showTaskUserTag') //특정 task와 그task에 연결된 user , tag 조회
+Route.get('/taskUser/:id', 'TasksController.showTaskUser') //특정 task와 그task에 연결된 user 조회
+Route.get('/taskTag/:id', 'TasksController.showTaskTag') //특정 task에 연결된 tag 조회
+
 Route.post('/tasks', 'TasksController.store')
-Route.patch('/tasks/:id', 'TasksController.update')
+Route.put('/tasks/:id', 'TasksController.update')
 Route.delete('/tasks/:id', 'TasksController.destory')
 
-Route.get('/about/  :name? ', 'PagesController.about').as('about')
-Route.get('/contact', 'PagesController.contact').as('contact')
+/*  === User ==*/
+Route.post('/register', 'UsersController.register')
 
-// Route.get('/about/:name?', async ({ params }) => {
-//   return params.name ? `This is ${params.name}'s about page` : 'This is the about page'
-// })
+Route.group(() => {
+  Route.get('/profile', 'UsersController.profile')
+  Route.post('/logout', 'UsersController.logout')
+}).middleware('auth')
 
-// Route.get('/contact', async () => {
-//   return 'This is the contact page '
-// })
+Route.post('/login', 'UsersController.login')
+
+Route.get('/users', 'UsersController.showAllUsers')
+Route.get('/users/:id', 'UsersController.showUser')
+
+Route.get('/tags/:id', 'TagsController.showTag') //특정 tag와 그 tag와 연결된 task 조회

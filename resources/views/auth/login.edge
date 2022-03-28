@@ -1,0 +1,77 @@
+<!doctype html>
+<html >
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <title>회원가입</title>
+  </head>
+  <body>
+
+    @layout('layouts.app')
+
+    @section('content')
+    <h4 class="container mt-4"><strong>로그인 페이지</strong></h4>
+  
+    <div class="container mt-4">
+        <form action="/login" method="POST">
+      
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" 
+                class="form-control {{flashMessages.get('errors.email') ? 'alert alert-danger' : '' }}" 
+                name="email"
+                value="{{flashMessages.get('email') || ''}} ">                
+        </div>
+
+        @if(flashMessages.has('errors.email'))
+          <p class="alert alert-danger">
+            {{flashMessages.get('errors.email')}}
+          </p>
+        @endif
+        
+        {{--  <div class="form-grou  p">
+          <label>이메일</label>
+          <input type="email" 
+                class="form-control {{flashMessages.get('errors.email') ? 'alert alert-danger' : '' }}" 
+                name="email"
+                value="{{flashMessages.get('email')|| ''}} ">                
+        </div>
+
+        @if(flashMessages.has('errors.email'))
+          <p class="alert alert-danger">
+            {{flashMessages.get('errors.email')}}
+          </p>
+        @endif  --}}
+        
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" 
+                class="form-control {{flashMessages.get('errors.password') ? 'alert alert-danger' : '' }}" 
+                name="password">                
+        </div>
+            
+        @if(flashMessages.has('errors.password'))
+          <p class="alert alert-danger">
+            {{flashMessages.get('errors.password')}}
+          </p>
+        @endif
+       
+
+        <button type="submit" class="btn btn-outline-secondary">로그인</button>
+                        
+        </form>
+    </div>
+    @endsection
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+   
+  </body>
+</html>

@@ -1,53 +1,47 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Task from 'App/Models/Task'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+
+import TasksRepository from 'App/Repositories/TasksRepository'
 
 export default class TasksController {
-  public async index({ view }: HttpContextContract) {
-    const tasks = await Task.all()
-
-    return view.render('tasks/index', { tasks })
+  //전체 task 조회
+  public async showAllTask() {
+    return TasksRepository.showAllTasks()
   }
 
-  public async store({ request, response, session }: HttpContextContract) {
-    const validationSchema = schema.create({
-      title: schema.string({ trim: true }, [rules.maxLength(50)]),
-    })
-
-    const validatedData = await request.validate({
-      schema: validationSchema,
-      messages: {
-        'title.required': '내용을 입력해주세요',
-        'title.maxLength': '50자를 초과할 수 없습니다',
-      },
-    })
-
-    await Task.create({
-      title: validatedData.title,
-    })
-
-    session.flash('notification', 'Task added!')
-
-    return response.redirect('back')
+  //특정 task - user, tag정보 조회
+  public async showTaskUserTag(id) {
+    return TasksRepository.showTaskUserTag(id)
   }
 
-  public async update({ request, response, session, params }: HttpContextContract) {
-    const task = await Task.findOrFail(params.id)
+  //특정 task - user정보조회
+  public async showTaskUser(id) {
+    return TasksRepository.showTaskUser(id)
+  }
 
-    task.isCompleted = !!request.input('completed')
+  //특정task - tag 정보조회
+  public async showTaskTag(id) {
+    return TasksRepository.showTaskTag(id)
+  }
+
+  public async store({ request }: HttpContextContract) {
+    const task = new Task()
+    const { title, userId } = request.all()
+
+    task.title = title
+    task.userId = userId
+
     await task.save()
 
-    session.flash('notification', 'Task updated!')
-
-    return response.redirect('back')
+    return task
   }
 
-  public async destory({ params, session, response }: HttpContextContract) {
-    const task = Task.findOrFail(params.id)
+  public async update(id) {
+    return TasksRepository.update(id)
+  }
 
-    await (await task).delete()
-    session.flash('notification', '삭제되었습니다.')
-
-    return response.redirect('back')
+  public async destory(id) {
+    return TasksRepository.delete(id)
+    //
   }
 }
