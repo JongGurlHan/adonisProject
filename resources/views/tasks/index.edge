@@ -1,0 +1,71 @@
+@layout('layouts/app')
+
+@section('content')
+    <div class="columns">
+        <div class="column is-three-fifths is-offset-one-fifth">
+            <div class="box">
+                <form action="/tasks" method="post">
+                    <div class="field has-addons">
+                        <div class="control is-expanded"> 
+                            <input type="text" name="title" class="input {{flashMessages.has('errors.title') ?
+                        'error' :''}}" placeholder="what needs to be done?" value=""{{flashMessages.get
+                        ('title') || ''}}>
+                        </div>
+                        <div class="controll">
+                            <button type="submit" class="button is-link">Add</button>
+                        </div>
+                    </div> 
+    
+                @if(flashMessages.has('errors.title'))
+                    <p class="error">
+                        {{flashMessages.get('errors.title')}}
+                    </p>
+                @endif
+    
+                </form>
+            </div> 
+            @if(flashMessages.has('notification'))
+                <div class="notification">
+                    {{flashMessages.get('notification')}}
+                </div>
+            @endif
+
+        </div class="box">
+            <table>
+                <tbody>
+                    @each(task in tasks)
+                    <tr>
+                        <td>
+                            <form action="{{`/tasks/${task.id}?_method=PATCH`}}" method="POST">
+                                <label for "completed" class="checkbox">
+                                 <input type="checkbox" name="completed" onchange="this.form.submit()" {{task.isCompleted ? 'checked' : ''}}>   
+                                </label>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="{{task.isCompleted ? 'completed' : ''}}">
+                                {{task.title}}
+                            </div> 
+                        </td>
+                        <td>
+                            <form action="{{`/tasks/${task.id}?_method=DELETE`}}" method="POST">
+                            <button type="submit" class=""></button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    @else
+                    <tr>
+                        <td colspan="3" class="">할일 없음!</td>
+                    </tr>
+                    @endeach
+                </tbody>
+            </table>
+
+         
+            
+        </div>
+    </div>
+
+@endsection
+ 
