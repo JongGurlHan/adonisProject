@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, manyToMany, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
-import User from './User'
 import Task from './Task'
 
 export default class Tag extends BaseModel {

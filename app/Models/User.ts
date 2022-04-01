@@ -10,7 +10,11 @@ export default class User extends BaseModel {
   @column()
   public name: string
 
-  @column()
+  @column({
+    //prepare: (value: string) => value + '@gmail.com',
+    //serialize: (value: string) => value + '@gmail.com', //직렬화: 조회후 전송(response)하는 순간 이뤄진다.
+    //consume: (value: string) => value + '@gmail.com', //데이터 조회순간부터 값이 변경되는 옵션이므로 console.log할때 이미 데이터가 변경되있다
+  })
   public email: string
 
   @column({ serializeAs: null })

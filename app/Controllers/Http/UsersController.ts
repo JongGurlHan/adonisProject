@@ -17,8 +17,8 @@ export default class UsersController {
   }
 
   //전체유저 조회
-  public async showAllUsers({}: HttpContextContract) {
-    return UserRepository.showAllUsers()
+  public async showAllUsers() {
+    return await UserRepository.showAllUsers()
   }
 
   //로그인 - 컨트롤러단에서 처리
@@ -40,7 +40,7 @@ export default class UsersController {
     return 'logout successfully!'
   }
 
-  // 특정 유저 조회
+  // 로그인한 유저 조회(토큰정보로)
   public async profile({ auth }: HttpContextContract) {
     console.log(auth.user)
     return auth.user

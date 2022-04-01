@@ -1,47 +1,53 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Task from 'App/Models/Task'
 
 import TasksRepository from 'App/Repositories/TasksRepository'
+import TasksValidator from 'App/Validators/TaskValidator'
 
 export default class TasksController {
+  //task 등록
+  public async store({ request }: HttpContextContract) {
+    try {
+      const validatedData = await request.validate(TasksValidator)
+      await TasksRepository.store(validatedData)
+      return validatedData
+    } catch (error) {
+      return error
+    }
+  }
+
   //전체 task 조회
   public async showAllTask() {
-    return TasksRepository.showAllTasks()
+    return await TasksRepository.showAllTasks()
   }
 
-  //특정 task - user, tag정보 조회
-  public async showTaskUserTag(id) {
-    return TasksRepository.showTaskUserTag(id)
+  //task 1개 - user, tag정보 조회
+  public async showTaskUserTag({ params }: HttpContextContract) {
+    return await TasksRepository.showTaskUserTag(params.id)
   }
 
-  //특정 task - user정보조회
-  public async showTaskUser(id) {
-    return TasksRepository.showTaskUser(id)
+  //task 1개 - user정보조회
+  public async showTaskUser({ params }: HttpContextContract) {
+    return await TasksRepository.showTaskUser(params.id)
   }
 
-  //특정task - tag 정보조회
-  public async showTaskTag(id) {
-    return TasksRepository.showTaskTag(id)
+  //task 1개 - tag 정보조회
+  public async showTaskTag({ params }: HttpContextContract) {
+    return await TasksRepository.showTaskTag(params.id)
   }
 
-  public async store({ request }: HttpContextContract) {
-    const task = new Task()
-    const { title, userId } = request.all()
-
-    task.title = title
-    task.userId = userId
-
-    await task.save()
-
-    return task
+  //task 수정
+  public async update({ request, params }: HttpContextContract) {
+    try {
+      const validatedData = await request.validate(TasksValidator)
+      await TasksRepository.update(params.id, validatedData.title)
+      return validatedData
+    } catch (error) {
+      return error
+    }
   }
 
-  public async update(id) {
-    return TasksRepository.update(id)
-  }
-
-  public async destory(id) {
-    return TasksRepository.delete(id)
-    //
+  //task 삭제
+  public async destory({ params }: HttpContextContract) {
+    return await TasksRepository.delete(params.id)
   }
 }
