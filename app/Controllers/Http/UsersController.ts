@@ -7,12 +7,14 @@ import UserValidator from 'App/Validators/UserValidator'
 export default class UsersController {
   //회원가입
   public async register({ request }: HttpContextContract) {
+    // try catch - throw 하는 이유 및 test에서 200나오는 이유 찾기
     try {
       const validatedData = await request.validate(UserValidator)
       await UserRepository.createUser(validatedData)
-      return '가입완료'
+      return validatedData
     } catch (error) {
-      return error
+      //return error.messages
+      throw error
     }
   }
 
@@ -20,6 +22,12 @@ export default class UsersController {
   public async showAllUsers() {
     return await UserRepository.showAllUsers()
   }
+  //특정유저 조회
+  public async showUser({params} : HttpContextContract) {
+    return await UserRepository.showUser(params.id)
+  }
+
+ 
 
   //로그인 - 컨트롤러단에서 처리
   public async login({ auth, request }: HttpContextContract) {

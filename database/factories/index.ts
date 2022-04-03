@@ -4,8 +4,11 @@ import Factory from '@ioc:Adonis/Lucid/Factory'
 //모델 팩토리: 테스트 코드 최소화, 무작위 데이터 생성
 export const UserFactory = Factory.define(User, ({ faker }) => {
   return {
-    name: faker.internet.userName(),
-    email: faker.internet.email(),
-    password: faker.internet.password(),
+    name: 'test1',
+    email: 'test1@naver.com',
+    password: '1111',
   }
 }).build()
+// name: faker.internet.userName(),
+// email: faker.internet.email(),
+// password: faker.internet.password(),

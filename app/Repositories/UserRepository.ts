@@ -24,4 +24,15 @@ export default class UserRepository extends User {
     console.log(users) //데이터 리턴 이전이므로
     return users
   }
+
+  public static async showUser(id: number){
+    const user = await User.query().where('id', id).first()
+    if (user) {
+      return user
+    } else {
+      return '해당 유저는 존재하지 않습니다.'
+    }
+
+
+  }
 }
