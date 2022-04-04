@@ -15,8 +15,8 @@ export default class UserValidator {
   })
 
   public messages = {
-    'required': '{{field}}를 입력해주세요',
-    //'email.required': '이메일을 입력해주세요',
+    'email.required': '이메일을 입력해주세요',
+    'name.required': '이름을 입력해주세요',
     'email.unique': '이미 존재하는 이메일입니다',
     'password.minLength': '비밀번호는 4글자 이상 작성해주세요',
   }

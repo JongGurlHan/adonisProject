@@ -16,6 +16,7 @@ export default class TasksRepository extends Task {
         }>
       | { title: string }
   ) {
+    const 
     return await Task.create(validatedData)
   }
 
@@ -87,7 +88,8 @@ export default class TasksRepository extends Task {
     const task = await Task.find(id)
     if (task) {
       await task.delete()
-      return '삭제완료'
+      //return '삭제완료'
+      return task
     } else {
       return '해당 task는 존재하지 않습니다.'
     }

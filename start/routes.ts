@@ -31,7 +31,7 @@ Route.get('/taskUserTag/:id', 'TasksController.showTaskUserTag').where(
 Route.get('/taskUser/:id', 'TasksController.showTaskUser') //특정 task와 그task에 연결된 user 조회
 Route.get('/taskTag/:id', 'TasksController.showTaskTag') //특정 task에 연결된 tag 조회
 
-Route.post('/tasks', 'TasksController.store')
+// Route.post('/tasks', 'TasksController.store')
 Route.put('/tasks/:id', 'TasksController.update')
 Route.delete('/tasks/:id', 'TasksController.destory')
 
@@ -39,8 +39,9 @@ Route.delete('/tasks/:id', 'TasksController.destory')
 Route.post('/register', 'UsersController.register')
 
 Route.group(() => {
-  Route.get('/profile', 'UsersController.profile')
-  Route.post('/logout', 'UsersController.logout')
+ Route.post('/logout', 'UsersController.logout')
+ Route.get('/profile', 'UsersController.profile')
+ Route.post('/tasks', 'TasksController.store')
 }).middleware('auth')
 
 Route.post('/login', 'UsersController.login')
@@ -55,3 +56,6 @@ Route.get('/tags/:id', 'TagsController.showTag') //특정 tag와 그 tag와 연�
 Route.post('/tags', 'TagsController.store')
 Route.put('/tags/:id', 'TagsController.update')
 Route.delete('/tags/:id', 'TagsController.delete')
+
+
+

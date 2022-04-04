@@ -8,10 +8,10 @@ export default class Tasks extends BaseSchema {
       table.increments('id').primary()
       table.string('title').notNullable()
       table.boolean('is_completed').defaultTo(0)
-      //table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE')
-      table.integer('user_id').unsigned().notNullable()
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
 
-      // ta ble.timestamps(true)
+      //table.integer('user_id').unsigned().notNullable()
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
