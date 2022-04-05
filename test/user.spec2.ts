@@ -1,3 +1,4 @@
+import { UserFactory } from 'Database/factories'
 import test from 'japa'
 import supertest from 'supertest'
 
@@ -7,18 +8,21 @@ let token: string
 
 test.group('User', () => {
    //factory 만들어서 
-  test('회원가입 - 가입시킨 계정이 존재하는지 검증', async (assert) => {
+  test.only('회원가입 - 가입시킨 계정이 존재하는지 검증', async (assert) => {
+    const user = await UserFactory.create()
+    console.log(user.name)
+    console.log(user.email)
+    console.log(user.password)
+
+
     const res =  await supertest(BASE_URL)
       .post('/register')
       .type('application/json')
-      .send(
-      {
-        name : 'test1',
-        email :'test1@naver.com', 
-        password: '1111'
-      })
+      .send(user)
       //존재하는지 여부는 여기서 체크하지 말고, 가입했을때 return 되는 값 확인
-      assert.equal(res.body.email, 'test1@naver.com')  
+      console.log(res.body)
+
+      //assert.equal(res.body.name, 'test1@naver.com')  
     })
 
   test('전체 유저 조회 - 전체 유저 수 검증', async (assert) => {

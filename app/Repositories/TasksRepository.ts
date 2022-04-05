@@ -4,20 +4,12 @@ import { DateTime } from 'luxon'
 
 export default class TasksRepository extends Task {
   //task 생성
-  public static async store(
-    validatedData:
-      | Partial<{
-          id: number
-          userId: number
-          title: string
-          isCompleted: boolean
-          createdAt: DateTime
-          updatedAt: DateTime
-        }>
-      | { title: string }
-  ) {
-    const 
-    return await Task.create(validatedData)
+  public static async store(validatedData, auth) {
+    const task : Task = new Task()
+    task.title = validatedData.title
+    task.userId = auth.user?.id
+    return await task.save()
+    //return await Task.create(validatedData)
   }
 
   //전체 task 조회

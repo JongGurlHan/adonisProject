@@ -1,9 +1,12 @@
 import test from 'japa'
 import supertest from 'supertest'
-
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 
-test.group('Task', () => {   
+let token: string 
+test.group('Task', (group) => {   
+
+  group.before(async() =>{
+  })
 
   test('회원가입', async (assert) => {
     const res =  await supertest(BASE_URL)
@@ -16,18 +19,31 @@ test.group('Task', () => {
         password: '1111'
       })
       assert.equal(res.body.email, 'test1@naver.com')  
+    })  
+
+  test('로그인', async(assert)=>{   
+    const res = await supertest(BASE_URL)
+      .post('/login')
+      .set('Accept', 'application/json')
+      .send({
+        email :'test1@naver.com',
+        password: '1111'
+      })
+      token = res.body.token.token 
+      assert.exists(token)
     })
     
-  test('게시글 등록', async (assert) => {           
+  test('게시글 등록', async (assert) => {   
+    console.log('게시글 등록 - 토큰조회: ' , token)   
+     
     const res =  await supertest(BASE_URL)
       .post('/tasks')
       .type('application/json')         
       .send(
       {
-        title : 'go swimming',
-        userId :'1', 
+        title : 'go swimming'
       })    
-      //res 해당하는 값들 다 assert, 데이터 형식도     
+      .set('Authorization', 'Bearer ' + token)
       assert.equal(res.body.title , 'go swimming')
     })
 
@@ -39,13 +55,29 @@ test.group('Task', () => {
   })
 
 
-  test('특정 task와 그 task에 연결된 user 조회',async (assert) => {
+  test('1개의 task와 그 task에 연결된 user 조회',async (assert) => {
     const res = await supertest(BASE_URL)
     .get('/taskUser/1')
     .expect(200)
-   // console.log(res.body)
     assert.equal(res.body.user.name, 'test1')   
   })
+
+  test('1개의 task와 그 task에 연결된 tag 조회',async (assert) => {
+    const res = await supertest(BASE_URL)
+    .get('/taskTag/1')
+    .expect(200)
+    //console.log(res.body)
+    //assert.equal(res.body.user.name, 'test1')   
+  })
+
+  test('1개의 task와 그 task에 연결된 user, tag 조회',async (assert) => {
+    const res = await supertest(BASE_URL)
+    .get('/taskUserTag/1')
+    .expect(200)
+    console.log(res.body)
+    //assert.equal(res.body.user.name, 'test1')   
+  })
+
 
   test('특정 task 수정',async (assert) => {
     const res = await supertest(BASE_URL)
@@ -53,21 +85,22 @@ test.group('Task', () => {
     .send(
       {
         title : 'go climbing',
-        userId :'4', 
       })    
     assert.equal(res.body.title, 'go climbing')    
-  })
+  })  
 
-  
 
   test('특정 task 삭제',async (assert) => {
     const res = await supertest(BASE_URL)
     .delete('/tasks/1')
     .expect(200)    
+    //console.log('삭제 전: ' ,res.body)
 
-    //console.log('삭제정보: ', res.body)
-
-
+    const res2 = await supertest(BASE_URL)
+    .get('/tasks')
+    .expect(200)   
+    //console.log('삭제 후', res2.body)
+    assert.equal(res2.body.length, '0')
     
   })
     

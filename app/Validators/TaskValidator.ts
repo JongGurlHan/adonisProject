@@ -6,7 +6,7 @@ export default class TasksValidator {
 
   public schema = schema.create({
     title: schema.string({ trim: true }, [rules.minLength(2), rules.maxLength(50)]),
-    userId: schema.number()
+    //userId: schema.number()
   })
 
   public messages = {

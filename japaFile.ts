@@ -24,6 +24,13 @@ async function runMigrations() {
     stdio: 'inherit',
   })
 }
+//seeder 돌리는 함수
+async function runSeeder() {
+  await execa.node('ace', ['db:seed', '--files', './database/seeders/FactoryRun.ts'], {
+    stdio: 'inherit',
+  })
+}
+
 
 async function rollbackMigrations() {
   await execa.node('ace', ['migration:rollback', '--batch=0'], {
@@ -44,6 +51,10 @@ configure({
   files: getTestFiles(),
 
   //files: ['test/**/*.spec.ts'],
-  before: [runMigrations, startHttpServer],
+  //before: [runMigrations, startHttpServer],
+  before: [runMigrations, startHttpServer,runSeeder],
   after: [rollbackMigrations],
+  
+  //before: [startHttpServer],
+  //after: [rollbackMigrations],
 })

@@ -1,26 +1,14 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Task from 'App/Models/Task'
-
 import TasksRepository from 'App/Repositories/TasksRepository'
 import TasksValidator from 'App/Validators/TaskValidator'
 
 export default class TasksController {
   //task 등록
   public async store({ request, auth }: HttpContextContract) {
-    // const title = request.input('title')
-    const userId = auth.user?.id
-
-    // const post = await Task.create({
-    //   title,
-    //   userId,
-    // })
-
-    // return post
     try {
       const validatedData = await request.validate(TasksValidator)
-      await TasksRepository.store(validatedData.title, userId)
-      console.log(validatedData)
-      return validatedData
+      const newTask = await TasksRepository.store(validatedData, auth)
+      return newTask
     } catch (error) {
       return error
     }

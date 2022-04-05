@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
 
 import UserRepository from 'App/Repositories/UserRepository'
 import UserValidator from 'App/Validators/UserValidator'
@@ -17,9 +16,6 @@ export default class UsersController {
       return error.messages
       //throw error
     }
-
-    
-
   }
 
   //전체유저 조회
@@ -39,15 +35,11 @@ export default class UsersController {
     const password = request.input('password')
     const token = await auth.use('api').attempt(email, password, { expiresIn: '24hours' }) //api인증.attempt(uuid, password)
 
-    //const user = await User.findBy('email', email)
     //console.log('토큰정보:' ,token.token)
-    const user = await User.findByOrFail('email', email)
     //console.log('로그인 여부:' , auth.use('api').isLoggedIn)
 
-    return {
-      user,
-      token
-    }
+    return token
+  
     
     // const email = request.input('email')
     // const password = request.input('password')
