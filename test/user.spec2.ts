@@ -8,12 +8,8 @@ let token: string
 
 test.group('User', () => {
    //factory 만들어서 
-  test.only('회원가입 - 가입시킨 계정이 존재하는지 검증', async (assert) => {
+  test.only('회원가입 - 가입시킨 계정이 존재하는지 검증', async () => {
     const user = await UserFactory.create()
-    console.log(user.name)
-    console.log(user.email)
-    console.log(user.password)
-
 
     const res =  await supertest(BASE_URL)
       .post('/register')

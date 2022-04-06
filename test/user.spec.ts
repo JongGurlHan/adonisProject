@@ -7,6 +7,15 @@ let token: string
 
 test.group('User', () => {
    //factory 만들어서 
+
+   test('전체 유저 조회 - 전체 유저 수 검증', async (assert) => {
+    const res =  await supertest(BASE_URL)
+      .get('/users')    
+      .expect(200) //주로 상태코드
+
+    assert.equal(res.body.length, 10)    
+  })
+
   test('회원가입 - 가입시킨 계정이 존재하는지 검증', async (assert) => {
     const res =  await supertest(BASE_URL)
       .post('/register')
@@ -20,22 +29,14 @@ test.group('User', () => {
       //존재하는지 여부는 여기서 체크하지 말고, 가입했을때 return 되는 값 확인
       assert.equal(res.body.email, 'test1@naver.com')  
     })
+  
 
-  test('전체 유저 조회 - 전체 유저 수 검증', async (assert) => {
-    const res =  await supertest(BASE_URL)
-      .get('/users')    
-      .expect(200) //주로 상태코드
-   // console.log(res.body)
-
-    assert.equal(res.body.length, 1)    
-  })
-
-
-  test('특정 유저 조회', async(assert)=>{
+  test('특정 유저 조회', async()=>{
     const res = await supertest(BASE_URL)
     .get('/users/1')
     //console.log('특정 유저 조회결과',res.body)
-    assert.equal(res.body.email ,'test1@naver.com')
+    .expect(200)
+    //assert.equal(res.body.email ,'test1@naver.com')
   })
 
 
@@ -47,7 +48,7 @@ test.group('User', () => {
     .post('/login')
     .set('Accept', 'application/json')
     .send({
-      email :'test1@naver.com',
+      email :'test2@naver.com',
       password: '1111'
     })
     token = res.body.token
@@ -72,8 +73,7 @@ test.group('User', () => {
     const res = await supertest(BASE_URL)
     .post('/logout')    
     .set('Authorization', 'Bearer ' + token)
-    //console.log(token)
-    
+    //console.log(token)    
     //console.log('토큰 존재확인: ', res.body.token)
     
     assert.notExists(res.body.token)  

@@ -1,15 +1,13 @@
-//import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Task from 'App/Models/Task'
 import { DateTime } from 'luxon'
 
 export default class TasksRepository extends Task {
   //task 생성
   public static async store(validatedData, auth) {
-    const task : Task = new Task()
+    const task: Task = new Task()
     task.title = validatedData.title
     task.userId = auth.user?.id
     return await task.save()
-    //return await Task.create(validatedData)
   }
 
   //전체 task 조회
@@ -21,8 +19,8 @@ export default class TasksRepository extends Task {
       return 'task가 하나도 없습니다.'
     }
   }
+
   //특정 task와 그 task와 연관된 user, tag조회
-  //타입지정필요
   public static async showTaskUserTag(id: number) {
     console.log(id)
     const task = await Task.query().where('id', id).preload('user').preload('tags').first()
@@ -54,6 +52,7 @@ export default class TasksRepository extends Task {
       return '해당 task는 존재하지 않습니다.'
     }
   }
+
   //task 수정
   public static async update(id: number, title: string) {
     const task = await Task.find(id) //SQL: SELECT * from "Task" WHERE "id" = 1 LIMIT 1;//파라미터가 pk인지
