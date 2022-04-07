@@ -5,88 +5,101 @@ const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 let token: string
 //console.log(BASE_URL)
 
-test.group('User', () => {
-   //factory 만들어서 
-
-   test('전체 유저 조회 - 전체 유저 수 검증', async (assert) => {
-    const res =  await supertest(BASE_URL)
-      .get('/users')    
-      .expect(200) //주로 상태코드
-
-    assert.equal(res.body.length, 10)    
+test.group('User', (group) => {
+  group.before(async () => {})
+  //before
+  test('전체 유저 조회 - 전체 유저 수 테스트', async (assert) => {
+    const res = await supertest(BASE_URL).get('/users').expect(200) //주로 상태코드
+    //console.log(res.body)
+    //factory 통해서 db에 삽입된 유저수 테스트
+    assert.equal(res.body.length, 10)
   })
 
-  test('회원가입 - 가입시킨 계정이 존재하는지 검증', async (assert) => {
-    const res =  await supertest(BASE_URL)
-      .post('/register')
-      .type('application/json')
-      .send(
-      {
-        name : 'test1',
-        email :'test1@naver.com', 
-        password: '1111'
+  test('회원가입 - 요청하는 정보로 가입되는지 테스트', async (assert) => {
+    const res = await supertest(BASE_URL).post('/register').type('application/json').send({
+      name: 'test1',
+      email: 'test1@naver.com',
+      password: '1111',
+    })
+    assert.equal(res.body.email, 'test1@naver.com')
+  })
+
+  test('특정 유저 조회', async (assert) => {
+    const res = await supertest(BASE_URL).get('/users/1').expect(200)
+    // id값이 1인 유저가 존재하는지 테스트
+    assert.exists(res.body.id, '1')
+  })
+
+  test('로그인 - 로그인시 토큰 생성되는지 테스트', async (assert) => {
+    //1. 유저조회
+    const res1 = await supertest(BASE_URL).get('/users/1').expect(200)
+
+    //2. 유저가 조회된다면 로그인(토큰생성)
+    if (res1) {
+      const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
+        email: res1.body.email,
+        password: '1111',
       })
-      //존재하는지 여부는 여기서 체크하지 말고, 가입했을때 return 되는 값 확인
-      assert.equal(res.body.email, 'test1@naver.com')  
-    })
-  
-
-  test('특정 유저 조회', async()=>{
-    const res = await supertest(BASE_URL)
-    .get('/users/1')
-    //console.log('특정 유저 조회결과',res.body)
-    .expect(200)
-    //assert.equal(res.body.email ,'test1@naver.com')
+      token = res2.body.token
+      //토큰이 생성되는지 테스트
+      assert.exists(token)
+    }
   })
 
+  test('토큰정보로 로그인된 유저 테스트', async (assert) => {
+    //1. 유저조회
+    const res1 = await supertest(BASE_URL).get('/users/1').expect(200)
 
-  //로그인 하면 토큰이 존재하는지 확인
-  // 헤더에 토큰을 전달해서 로그인 되는지 확인
+    //2. 유저가 조회된다면 로그인(토큰생성)
+    if (res1) {
+      const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
+        email: res1.body.email,
+        password: '1111',
+      })
+      token = res2.body.token
 
-  test('로그인', async(assert)=>{   
-    const res = await supertest(BASE_URL)
-    .post('/login')
-    .set('Accept', 'application/json')
-    .send({
-      email :'test2@naver.com',
-      password: '1111'
-    })
-    token = res.body.token
+      //3. 토큰이 존재한다면 로그인된 유저의 정보조회
+      if (token) {
+        const res3 = await supertest(BASE_URL)
+          .get('/profile')
+          .set('Authorization', 'Bearer ' + token)
 
-    //console.log('토큰정보 : ' ,token)
-    assert.exists(token)
+        //조회된 유저와 로그인된 유저의 정보가 동일한지 테스트
+        assert.equal(res1.body.name, res3.body.name)
+        assert.equal(res1.body.email, res3.body.email)
+      } else {
+        console.log('로그인 정보가 없습니다.')
+      }
+    }
   })
 
-  //로그인한 유저 조회(토큰정보로)
-  test('로그인한 유저 조회 -토큰정보로', async (assert) => {
-    const res = await supertest(BASE_URL)
-    .get('/profile')    
-    .set('Authorization', 'Bearer ' + token)
+  test('로그아웃 - 로그아웃 하면 토큰이 사라지는지 테스트', async (assert) => {
+    //1. 유저조회
+    const res1 = await supertest(BASE_URL).get('/users/1').expect(200)
 
-   // console.log('로그인한 유저 정보: ' , res.body)
-    assert.exists(res.body)
+    //2. 유저가 조회된다면 로그인(토큰생성)
+    if (res1) {
+      const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
+        email: res1.body.email,
+        password: '1111',
+      })
+      token = res2.body.token
+
+      //3. 로그인해서 토큰 생성된다면 로그아웃(토큰삭제)
+      if (token) {
+        const res3 = await supertest(BASE_URL)
+          .post('/logout')
+          .set('Authorization', 'Bearer ' + token)
+
+        //토큰이 존재하는지 테스트
+        assert.exists(res3.body)
+      } else {
+        console.log('로그인 정보가 없습니다.')
+      }
+    }
   })
-
-
-  //로그아웃 - 로그아웃 하면 토큰이 사라졌는지 확인
-  test('로그아웃', async(assert)=>{
-    const res = await supertest(BASE_URL)
-    .post('/logout')    
-    .set('Authorization', 'Bearer ' + token)
-    //console.log(token)    
-    //console.log('토큰 존재확인: ', res.body.token)
-    
-    assert.notExists(res.body.token)  
-  })
-
-  
-
 })
 
-
-
-
-
-
-
-
+//group
+// before token make
+//test token

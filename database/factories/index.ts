@@ -6,16 +6,7 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
   return {
     name: faker.internet.userName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),    
+    password: '1111',
   }
 }).build()
-
-
-
-// export const TaskFactory = Factory
-//   .define(User, ({ faker }) => {
-//     return {
-//       title: faker.internet.t,
-//     }
-//   })
-  // .relation('posts', () => PostFactory) // 👈
+//삭제안된 조건 걸어서

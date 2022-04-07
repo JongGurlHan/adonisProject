@@ -15,7 +15,6 @@ function getTestFiles() {
   if (!userDefined) {
     return 'test/**/*.spec.ts'
   }
-
   return `${userDefined.replace(/\.ts$|\.js$/, '')}.ts`
 }
 
@@ -24,13 +23,12 @@ async function runMigrations() {
     stdio: 'inherit',
   })
 }
-//seeder 돌리는 함수
+
 async function runSeeder() {
   await execa.node('ace', ['db:seed', '--files', './database/seeders/FactoryRun.ts'], {
     stdio: 'inherit',
   })
 }
-
 
 async function rollbackMigrations() {
   await execa.node('ace', ['migration:rollback', '--batch=0'], {
@@ -44,17 +42,9 @@ async function startHttpServer() {
   await new Ignitor(__dirname).httpServer().start()
 }
 
-/**
- * Configure test runner
- */
 configure({
-  files: getTestFiles(),
-
   //files: ['test/**/*.spec.ts'],
-  //before: [runMigrations, startHttpServer],
-  before: [runMigrations, startHttpServer,runSeeder],
+  files: getTestFiles(),
+  before: [runMigrations, startHttpServer, runSeeder],
   after: [rollbackMigrations],
-  
-  //before: [startHttpServer],
-  //after: [rollbackMigrations],
 })
