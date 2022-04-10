@@ -3,6 +3,7 @@ import supertest from 'supertest'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 let token: string
+const defaultPw: string = '1111'
 //console.log(BASE_URL)
 
 test.group('User', (group) => {
@@ -10,7 +11,6 @@ test.group('User', (group) => {
   //before
   test('전체 유저 조회 - 전체 유저 수 테스트', async (assert) => {
     const res = await supertest(BASE_URL).get('/users').expect(200) //주로 상태코드
-    //console.log(res.body)
     //factory 통해서 db에 삽입된 유저수 테스트
     assert.equal(res.body.length, 10)
   })
@@ -19,7 +19,7 @@ test.group('User', (group) => {
     const res = await supertest(BASE_URL).post('/register').type('application/json').send({
       name: 'test1',
       email: 'test1@naver.com',
-      password: '1111',
+      password: defaultPw,
     })
     assert.equal(res.body.email, 'test1@naver.com')
   })
@@ -30,15 +30,18 @@ test.group('User', (group) => {
     assert.exists(res.body.id, '1')
   })
 
-  test('로그인 - 로그인시 토큰 생성되는지 테스트', async (assert) => {
+  test.only('로그인 - 로그인시 토큰 생성되는지 테스트', async (assert) => {
+    // db에 어떤 값이 있더라도 테스트 돌아갈 수 있도록 설정
+
     //1. 유저조회
     const res1 = await supertest(BASE_URL).get('/users/1').expect(200)
+    //
 
     //2. 유저가 조회된다면 로그인(토큰생성)
     if (res1) {
       const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
         email: res1.body.email,
-        password: '1111',
+        password: defaultPw,
       })
       token = res2.body.token
       //토큰이 생성되는지 테스트
@@ -54,7 +57,7 @@ test.group('User', (group) => {
     if (res1) {
       const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
         email: res1.body.email,
-        password: '1111',
+        password: defaultPw,
       })
       token = res2.body.token
 
@@ -75,13 +78,13 @@ test.group('User', (group) => {
 
   test('로그아웃 - 로그아웃 하면 토큰이 사라지는지 테스트', async (assert) => {
     //1. 유저조회
-    const res1 = await supertest(BASE_URL).get('/users/1').expect(200)
+    const res1 = await supertest(BASE_URL).get('/users/1').expect(200) //에러났을때 오류확인 불가 -> 삭제, 다른방식으로 체크
 
     //2. 유저가 조회된다면 로그인(토큰생성)
     if (res1) {
       const res2 = await supertest(BASE_URL).post('/login').set('Accept', 'application/json').send({
         email: res1.body.email,
-        password: '1111',
+        password: defaultPw,
       })
       token = res2.body.token
 
@@ -99,7 +102,3 @@ test.group('User', (group) => {
     }
   })
 })
-
-//group
-// before token make
-//test token

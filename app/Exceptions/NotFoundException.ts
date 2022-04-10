@@ -16,16 +16,16 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 // status?: number | undefined
 // status: number | undefined = undefined
 export default class NotFoundException extends Exception {
-  constructor(modelNmae: string) {
-    super(`${modelNmae} not found!!`, 404)
+  constructor(modelName: string) {
+    super(`${modelName} not found!!`, 404)
   }
 
-  //code, status 차이 다시 확인!
   public async handle(error: this, { response }: HttpContextContract) {
     response.status(error.status).send({
       error: {
         message: this.message,
-        code: error.code,
+        name: this.name,
+        status: this.status,
       },
     })
   }

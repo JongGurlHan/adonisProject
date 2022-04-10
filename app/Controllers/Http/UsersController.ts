@@ -1,10 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import RegisterUserException from 'App/Exceptions/RegisterUserException'
-import ShowUserException from 'App/Exceptions/ShowUserException'
 import User from 'App/Models/User'
 import UserRepository from 'App/Repositories/UserRepository'
 import UserValidator from 'App/Validators/UserValidator'
+
+import { globalUser } from 'App/Middleware/UserId'
 
 export default class UsersController {
   //회원가입
@@ -25,33 +26,19 @@ export default class UsersController {
   public async showAllUsers({ response }: HttpContextContract) {
     try {
       const users = await UserRepository.showAllUsers()
-      if (users == null) {
-        throw new ShowUserException('회원정보가 없습니다.', 404, 'E_INVALID_USER')
+      if (!users) {
+        throw new NotFoundException('users')
       }
       return users
     } catch (e) {
       response.status(e.status)
-      return e.name + '::' + e.message
+      return e
     }
   }
 
   //특정유저 조회
-  public async showUser({ params, response }: HttpContextContract) {
-    try {
-      const user = await UserRepository.showUser(params.id)
-      if (!user) {
-        //null, undefiend 상황일때 / !사용법
-        throw new NotFoundException('user')
-      }
-      return user
-    } catch (e) {
-      console.log(e.code)
-      //console.log(e.status)
-      // console.log(e.message)
-
-      response.status(e.status)
-      throw e
-    }
+  public async showUser() {
+    return globalUser
   }
 
   //로그인
@@ -61,14 +48,14 @@ export default class UsersController {
 
     try {
       const user = await User.findBy('email', email)
-      if (user == null) {
-        throw new NotFoundException('해당 유저는 존재하지 않습니다.')
+      if (!user) {
+        throw new NotFoundException('user')
       }
       const token = await auth.use('api').attempt(email, password, { expiresIn: '24hours' })
       return token
     } catch (e) {
       response.status(e.status)
-      return e.name + '::' + e.message
+      throw e
     }
   }
 

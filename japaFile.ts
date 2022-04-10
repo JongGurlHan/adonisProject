@@ -24,14 +24,21 @@ async function runMigrations() {
   })
 }
 
+// 테이블이 많을때 팩토리 돌리는 방법 새각
 async function runSeeder() {
   await execa.node('ace', ['db:seed', '--files', './database/seeders/FactoryRun.ts'], {
     stdio: 'inherit',
   })
 }
 
-async function rollbackMigrations() {
-  await execa.node('ace', ['migration:rollback', '--batch=0'], {
+// async function rollbackMigrations() {
+//   await execa.node('ace', ['migration:rollback', '--batch=0'], {
+//     stdio: 'inherit',
+//   })
+//}
+
+async function truncateMigrations() {
+  await execa.node('ace', ['migration:truncate', '--batch=0'], {
     stdio: 'inherit',
   })
 }
@@ -46,5 +53,7 @@ configure({
   //files: ['test/**/*.spec.ts'],
   files: getTestFiles(),
   before: [runMigrations, startHttpServer, runSeeder],
-  after: [rollbackMigrations],
+  //after: [rollbackMigrations],
 })
+
+//

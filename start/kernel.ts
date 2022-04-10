@@ -18,12 +18,15 @@ import Server from '@ioc:Adonis/Core/Server'
 |
 | An array of global middleware, that will be executed in the order they
 | are defined for every HTTP requests.
+| Global middleware are executed for all the HTTP requests 
+| in the same sequence as they are registered.
 |
 */
 Server.middleware.register([
   () => import('@ioc:Adonis/Core/BodyParser'),
   //Silent Auth: 로그인강요x, 로그인 되었다면 로그인 관련 정보 제공, 글로벌 미들웨어에만 등록가능
   () => import('App/Middleware/SilentAuth'),
+  // () => import('App/Middleware/UserId'),
 ])
 
 /*
@@ -44,4 +47,5 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
   auth: () => import('App/Middleware/Auth'),
+  userId: () => import('App/Middleware/UserId'),
 })
