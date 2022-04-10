@@ -23,15 +23,12 @@ import Route from '@ioc:Adonis/Core/Route'
 /*  === Task ==*/
 
 Route.get('/tasks', 'TasksController.showAllTask') //전체 task 조회
-
 Route.get('/taskUserTag/:id', 'TasksController.showTaskUserTag').where(
   'id',
   Route.matchers.number()
 ) //특정 task와 그task에 연결된 user , tag 조회
 Route.get('/taskUser/:id', 'TasksController.showTaskUser') //특정 task와 그task에 연결된 user 조회
 Route.get('/taskTag/:id', 'TasksController.showTaskTag') //특정 task에 연결된 tag 조회
-
-// Route.post('/tasks', 'TasksController.store')
 Route.put('/tasks/:id', 'TasksController.update')
 Route.delete('/tasks/:id', 'TasksController.destory')
 
@@ -39,15 +36,16 @@ Route.delete('/tasks/:id', 'TasksController.destory')
 Route.post('/register', 'UsersController.register')
 
 Route.group(() => {
- Route.post('/logout', 'UsersController.logout')
- Route.get('/profile', 'UsersController.profile')
- Route.post('/tasks', 'TasksController.store')
+  Route.post('/logout', 'UsersController.logout')
+  Route.get('/profile', 'UsersController.profile')
+  Route.post('/tasks', 'TasksController.store')
 }).middleware('auth')
 
 Route.post('/login', 'UsersController.login')
-
+//미들웨어 재활용 할 수 있는 방법 (task, tag )
+// 라우터 많아졌을때 쪼개는 방법
 Route.get('/users', 'UsersController.showAllUsers')
-Route.get('/users/:id', 'UsersController.showUser')
+Route.get('/users/:id', 'UsersController.showUser').middleware('userId')
 
 /*  === Tag ==*/
 
@@ -57,6 +55,4 @@ Route.post('/tags', 'TagsController.store')
 Route.put('/tags/:id', 'TagsController.update')
 Route.delete('/tags/:id', 'TagsController.delete')
 
-/* ==middle ware test */ 
-
-
+/* ==middle ware test */
