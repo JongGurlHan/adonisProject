@@ -4,6 +4,7 @@ import { join } from 'path'
 import getPort from 'get-port'
 import { configure } from 'japa'
 import sourceMapSupport from 'source-map-support'
+// import User from 'App/Models/User'
 
 process.env.NODE_ENV = 'testing'
 process.env.ADONIS_ACE_CWD = join(__dirname)
@@ -31,17 +32,21 @@ async function runSeeder() {
   })
 }
 
-// async function rollbackMigrations() {
-//   await execa.node('ace', ['migration:rollback', '--batch=0'], {
-//     stdio: 'inherit',
-//   })
-//}
-
-async function truncateMigrations() {
-  await execa.node('ace', ['migration:truncate', '--batch=0'], {
+async function rollbackMigrations() {
+  //굳이 테이블을 다 지울 필요가 없으니까
+  // await User.truncate(true)
+  // await User.truncate(true) // task, tag,외래키 설정 확인!
+  // await User.truncate(true)
+  await execa.node('ace', ['migration:rollback', '--batch=0'], {
     stdio: 'inherit',
   })
 }
+
+// async function truncateMigrations() {
+//   await execa.node('ace', ['migration:truncate', '--batch=0'], {
+//     stdio: 'inherit',
+//   })
+// }
 
 async function startHttpServer() {
   const { Ignitor } = await import('@adonisjs/core/build/src/Ignitor')
@@ -52,8 +57,12 @@ async function startHttpServer() {
 configure({
   //files: ['test/**/*.spec.ts'],
   files: getTestFiles(),
-  before: [runMigrations, startHttpServer, runSeeder],
+  before: [rollbackMigrations, runMigrations, startHttpServer, runSeeder],
+  //-> 4/11
   //after: [rollbackMigrations],
 })
 
-//
+//테스트 마이그레이션 절차
+//테스트 돌리기전: 롤백, 마이그레이션, 런 시더로 데이터 생성
+//테스트 진행
+//테스트 후

@@ -18,6 +18,10 @@ export default class Task extends BaseModel {
   @column()
   public userId: number
 
+  //태그
+  // @column()
+  // public tagId: number
+
   @column()
   public title: string
 

@@ -4,6 +4,7 @@ import RegisterUserException from 'App/Exceptions/RegisterUserException'
 import User from 'App/Models/User'
 import UserRepository from 'App/Repositories/UserRepository'
 import UserValidator from 'App/Validators/UserValidator'
+import Event from '@ioc:Adonis/Core/Event'
 
 import { globalUser } from 'App/Middleware/UserId'
 
@@ -13,6 +14,9 @@ export default class UsersController {
     try {
       const validatedData = await request.validate(UserValidator)
       await UserRepository.createUser(validatedData)
+
+      Event.emit('new:user', { email: validatedData.email, name: validatedData.name })
+
       return validatedData
     } catch (e) {
       const message = '회원가입 오류입니다.'
@@ -63,7 +67,7 @@ export default class UsersController {
   public async logout({ auth }: HttpContextContract) {
     await auth.use('api').revoke()
 
-    // console.log(auth.user)
+    console.log(auth.user)
     if (auth.user == null) {
       return auth.user
     } else {

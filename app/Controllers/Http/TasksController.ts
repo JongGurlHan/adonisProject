@@ -1,6 +1,8 @@
+import Application from '@ioc:Adonis/Core/Application'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import TasksRepository from 'App/Repositories/TasksRepository'
 import TasksValidator from 'App/Validators/TaskValidator'
+import { schema } from '@ioc:Adonis/Core/Validator'
 
 export default class TasksController {
   //task 등록
@@ -12,6 +14,29 @@ export default class TasksController {
     } catch (error) {
       return error
     }
+  }
+
+  public async storeTask({ request, response }: HttpContextContract) {
+    const postSchema = schema.create({
+      task: schema.file({
+        size: '2mb',
+        extnames: ['jpg', 'gif', 'png'],
+      }),
+    })
+    // const files = request.allFiles()
+    // const task = request.file('task', {
+    //   size: '2mb',
+    //   extnames: ['jpg', 'png'],
+    // })
+    // console.log(task)
+    // if (!task || !task.isValid) {
+    //   return response.send({
+    //     message: 'problme with file!',
+    //   })
+    // }
+    // await task.move(Application.tmpPath('uploads'))
+
+    const postData = await request.validate({ schema: postSchema })
   }
 
   //전체 task 조회

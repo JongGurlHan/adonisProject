@@ -4,14 +4,15 @@ import User from 'App/Models/User'
 import UserRepository from 'App/Repositories/UserRepository'
 
 export let globalUser: User
-
+//범용적으로 사용할 목적으로 이름 변경
 export default class UserId {
   public async handle({ request }: HttpContextContract, next: () => Promise<void>) {
-    console.log('=== UserId Middleware is running! ===')
+    console.log('=== Middleware is running! ===')
 
+    //라우터 별로 지정한 파라미터가 안들어왔을때 어떻게 할지 수정
+    //1. 어느 라우터 파라미터가 넘어오는지 확인
     const idParam = request.param('id')
 
-    //유저 검색 할때 id값이 있는지 없는지 구분
     if (idParam) {
       let user = await UserRepository.showUser(idParam)
       if (user) {
@@ -20,9 +21,7 @@ export default class UserId {
         throw new NotFoundException('user')
       }
     } else {
-      //exception 던지는 방향으로
-      //or 전체 조회 미들웨어 걷어내기
-      console.log('파라미터를 입력하지 않았습니다 - 전체유저 조회')
+      throw new NotFoundException('param')
     }
 
     await next()

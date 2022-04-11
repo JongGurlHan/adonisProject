@@ -6,9 +6,13 @@ export default class TasksRepository extends Task {
   public static async store(validatedData, auth) {
     const task: Task = new Task()
     task.title = validatedData.title
+    // task.tagId = validatedData.tagId
     task.userId = auth.user?.id
     return await task.save()
   }
+
+  //파일저장
+  public static async storeTask() {}
 
   //전체 task 조회
   public static async showAllTasks() {
