@@ -12,7 +12,7 @@ export default class TasksRepository extends Task {
   }
 
   //파일저장
-  public static async storeTask() {}
+  //public static async uploadFile(validatedData) {}
 
   //전체 task 조회
   public static async showAllTasks() {
@@ -25,9 +25,9 @@ export default class TasksRepository extends Task {
   }
 
   //특정 task와 그 task와 연관된 user, tag조회
-  public static async showTaskUserTag(id: number) {
-    console.log(id)
-    const task = await Task.query().where('id', id).preload('user').preload('tags').first()
+  public static async showTaskUserTag(taskId: number) {
+    console.log(taskId)
+    const task = await Task.query().where('id', taskId).preload('user').preload('tags').first()
     if (task) {
       return task
     } else {
@@ -36,8 +36,8 @@ export default class TasksRepository extends Task {
   }
 
   //특정 task와 그 task에 연결된 user 조회
-  public static async showTaskUser(id: number) {
-    const task = await Task.query().where('id', id).preload('user').first()
+  public static async showTaskUser(taskId: number) {
+    const task = await Task.query().where('id', taskId).preload('user').first()
 
     if (task) {
       return task
@@ -47,8 +47,8 @@ export default class TasksRepository extends Task {
   }
 
   //특정 task에 연결된 tag 조회
-  public static async showTaskTag(id: number) {
-    const taskTag = await Task.query().where('id', id).preload('tags').first()
+  public static async showTaskTag(taskId: number) {
+    const taskTag = await Task.query().where('id', taskId).preload('tags').first()
 
     if (taskTag) {
       return taskTag
@@ -58,8 +58,9 @@ export default class TasksRepository extends Task {
   }
 
   //task 수정
-  public static async update(id: number, title: string) {
-    const task = await Task.find(id) //SQL: SELECT * from "Task" WHERE "id" = 1 LIMIT 1;//파라미터가 pk인지
+  public static async update(taskId: number, title: string) {
+    const task = await Task.find(taskId) //SQL: SELECT * from "Task" WHERE "id" = 1 LIMIT 1;//파라미터가 pk인지
+    console.log(task)
     if (task) {
       await task
         .merge({
@@ -74,13 +75,13 @@ export default class TasksRepository extends Task {
   }
 
   //task 삭제
-  public static async delete(id: number) {
+  public static async delete(taskId: number) {
     /**
      * findOrFail()
      * Same as the find method.
      * But instead of returning null it will raise an exception when the row doesn't exists.
      */
-    const task = await Task.find(id)
+    const task = await Task.find(taskId)
     if (task) {
       await task.delete()
       //return '삭제완료'

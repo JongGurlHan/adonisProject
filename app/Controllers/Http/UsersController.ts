@@ -6,7 +6,7 @@ import UserRepository from 'App/Repositories/UserRepository'
 import UserValidator from 'App/Validators/UserValidator'
 import Event from '@ioc:Adonis/Core/Event'
 
-import { globalUser } from 'App/Middleware/UserId'
+// import { globalUser } from 'App/Middleware/UserId'
 
 export default class UsersController {
   //회원가입
@@ -42,7 +42,7 @@ export default class UsersController {
 
   //특정유저 조회
   public async showUser() {
-    return globalUser
+    // return globalUser
   }
 
   //로그인
@@ -69,6 +69,7 @@ export default class UsersController {
 
     console.log(auth.user)
     if (auth.user == null) {
+      console.log('logout success!')
       return auth.user
     } else {
       return 'logout failed!'
@@ -77,6 +78,7 @@ export default class UsersController {
 
   // 로그인한 유저 조회(토큰정보로)
   public async profile({ auth }: HttpContextContract) {
+    console.log(auth.user)
     return auth.user
   }
 }

@@ -11,14 +11,14 @@ export default class UserId {
 
     //라우터 별로 지정한 파라미터가 안들어왔을때 어떻게 할지 수정
     //1. 어느 라우터 파라미터가 넘어오는지 확인
-    const idParam = request.param('id')
+    const idParam = request.param('userId')
 
     if (idParam) {
       let user = await UserRepository.showUser(idParam)
       if (user) {
         globalUser = user
       } else {
-        throw new NotFoundException('user')
+        throw new NotFoundException('userfasdfadsf')
       }
     } else {
       throw new NotFoundException('param')
