@@ -18,7 +18,7 @@ export default class UserId {
       if (user) {
         globalUser = user
       } else {
-        throw new NotFoundException('userfasdfadsf')
+        throw new NotFoundException('user')
       }
     } else {
       throw new NotFoundException('param')

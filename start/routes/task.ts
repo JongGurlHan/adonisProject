@@ -13,7 +13,7 @@ Route.group(() => {
 
   Route.delete('/:taskId', 'TasksController.destory')
 
-  Route.post('/file', 'TasksController.uploadFile').middleware('auth') //추후 1.auth라우터 적용 필요
+  Route.post('/file', 'TasksController.uploadFile')
 }).prefix('/tasks')
 
 Route.post('/transactionTest', 'TasksController.transactionTest')

@@ -46,7 +46,7 @@ export default class UsersController {
   }
 
   //로그인
-  public async login({ auth, request, response }: HttpContextContract) {
+  public async login({ auth, request }: HttpContextContract) {
     const email = request.input('email')
     const password = request.input('password')
 
@@ -58,8 +58,7 @@ export default class UsersController {
       const token = await auth.use('api').attempt(email, password, { expiresIn: '24hours' })
       return token
     } catch (e) {
-      response.status(e.status)
-      throw e
+      throw new NotFoundException('user')
     }
   }
 

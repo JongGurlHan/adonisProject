@@ -13,4 +13,5 @@ export default class TasksValidator {
     'title.minLength': '최소 2자 이상 입력해주세요',
     'title.maxLength': '최대 50자까지 입력 가능합니다',
   }
+  data: any
 }

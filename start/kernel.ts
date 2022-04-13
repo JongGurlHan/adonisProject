@@ -26,7 +26,6 @@ Server.middleware.register([
   () => import('@ioc:Adonis/Core/BodyParser'),
   //Silent Auth: 로그인강요x, 로그인 되었다면 로그인 관련 정보 제공, 글로벌 미들웨어에만 등록가능
   () => import('App/Middleware/SilentAuth'),
-  // () => import('App/Middleware/UserId'),
 ])
 
 /*

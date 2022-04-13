@@ -4,12 +4,9 @@ import Task from 'App/Models/Task'
 import TasksRepository from 'App/Repositories/TasksRepository'
 import TasksValidator from 'App/Validators/TaskValidator'
 import Database from '@ioc:Adonis/Lucid/Database'
-
-//import { validator, schema } from '@ioc:Adonis/Core/Validator'
-
+import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
 import * as fs from 'fs'
-
-let taskArr: string[]
+import NotFoundException from 'App/Exceptions/NotFoundException'
 
 export default class TasksController {
   //task 등록
@@ -22,43 +19,85 @@ export default class TasksController {
       return error
     }
   }
+  //file validaotor
+  // task validator
+  //커밋, 롤백시 파일 삭제 추가
+  //성공 시 200
+  //실패시 412, 에러 메시지 리턴
+  //+@비동기로 테스트(새로 메소드 파서) -> 시간소요 비교(시간될때 필수)
+
+  //지금까지 한 작업 커밋
 
   //file 업로드
   public async uploadFile({ request, auth, response }: HttpContextContract) {
     const file = request.file('file')
-    const trx = await Database.transaction()
+    console.time('test')
+    let taskArr: string[]
+    let savedTask: Task[] = []
 
-    try {
-      if (file && auth.user) {
-        const user = auth.user
+    if (auth.user) {
+      const user = auth.user
+      //파일정보가 있으면
+      if (file && file.filePath) {
         //1. 파일저장
         await file.move(Application.tmpPath('uploads'))
-        const filePath: string = String(file.filePath)
-        console.log('경로:', filePath)
+        const filePath: string = file.filePath
 
         //2. 저장된 파일에서 task 한줄씩 읽어서 taskArr 배열에 등록
         taskArr = fs.readFileSync(filePath).toString().split('\n')
 
+        const trx = await Database.transaction()
         //3. taskArr배열 길이 만큼 for 문 돌면서 task에 등록
-        for (let i = 0; i < taskArr.length; i++) {
-          const task: Task = new Task()
-          task.title = taskArr[i]
-          task.userId = user.id
-          if (task.title === '') {
-            throw Error
-          }
-          task.useTransaction(trx)
-          await task.save()
-        }
 
-        await trx.commit() // 완료 (여기까지 왔으면 문제없다는 것이다. 실제로 저장진행)
+        try {
+          //비동기시 for each 혹은 map으로
+          for (let i = 0; i < taskArr.length; i++) {
+            const task: Task = new Task()
+
+            task.title = taskArr[i]
+            task.userId = user.id
+
+            // await validator.validate(
+            //   new TasksValidator({
+            //     data: task,
+            //   })
+            // )
+            await validator.validate({
+              schema: schema.create({
+                title: schema.string({ trim: true }, [rules.minLength(2), rules.maxLength(50)]),
+              }),
+              messages: {
+                'required': '제목을 입력해주세요',
+                'title.minLength': '최소 2자 이상 입력해주세요',
+                'title.maxLength': '최대 50자까지 입력 가능합니다',
+              },
+              data: task,
+            })
+
+            task.useTransaction(trx)
+
+            await task.save()
+            savedTask.push(task)
+          }
+          await trx.commit()
+          console.timeEnd('test')
+
+          return savedTask //업로드 성공 메시지 리턴하도록 수정
+        } catch (error) {
+          console.log(error)
+          await trx.rollback()
+          //커밋, 롤백시 파일 삭제 추가
+          //파일 삭제시 있는지 먼저 확인 후 삭제
+          //+비동기 for문 적용
+          console.timeEnd('test')
+
+          return response.status(412) //코드확인
+        }
       } else {
-        console.log('파일정보 혹은 로그인 정보가 없습니다.')
+        throw new NotFoundException('file')
       }
-    } catch (error) {
-      console.log(error)
-      await trx.rollback()
-      return response.status(500) //코드확인
+    } else {
+      throw new NotFoundException('user')
     }
   }
 
